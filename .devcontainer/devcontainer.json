@@ -1,0 +1,16 @@
+{
+  "name": "Home Assistant Dev",
+  "forwardPorts": [ 8123 ],
+  "context": "..",
+  "dockerFile": "./Dockerfile",
+  "mounts": [
+    "source=home-assistant,target=/config",
+    "source=${localWorkspaceFolder}/custom_components,target=/config/custom_components,type=bind,consistency=cached"
+  ],
+  "extensions": [
+    "ms-python.python",
+    "paultirk.vscode-coding-stats",
+	"mhutchie.git-graph",
+	"ryanluker.vscode-coverage-gutters"
+  ]
+}

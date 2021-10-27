@@ -1,0 +1,35 @@
+{
+  // Verwendet IntelliSense zum Ermitteln möglicher Attribute.
+  // Zeigen Sie auf vorhandene Attribute, um die zugehörigen Beschreibungen anzuzeigen.
+  // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Home-Assistant",
+      "type": "python",
+      "request": "launch",
+      "module": "homeassistant",
+      "justMyCode": false,
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/custom_components",
+          "remoteRoot": "/config/custom_components"
+        }
+      ],
+      "args": [
+        "--debug",
+        "--config", "/config"
+      ]
+    },
+    {
+      "name": "Python Debugging Tests",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "purpose": [ "debug-test" ],
+      "env": {
+        "PYTEST_ADDOPTS": "--no-cov"
+      }
+    }
+  ]
+}
