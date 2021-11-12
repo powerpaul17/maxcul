@@ -1,0 +1,17 @@
+enable_pairing:
+  description: Enable pairing of MAX! devices for a given duration
+  fields:
+    device_path:
+      name: Device Path
+      description: The path of the CUL device for which pairing is enabled
+      selector:
+        text:
+    duration:
+      name: Duration
+      description: Duration for which pairing is possible in seconds
+      default: 60
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
