@@ -1,5 +1,8 @@
+from typing import Any, Mapping
+
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
+    DEVICE_CLASS_WINDOW
 )
 
 from homeassistant.config_entries import ConfigEntry
@@ -22,6 +25,7 @@ from custom_components.maxcul import (
 )
 
 from custom_components.maxcul.pymaxcul.maxcul._const import (
+    ATTR_BATTERY_LOW,
     SHUTTER_CONTACT
 )
 
@@ -42,3 +46,33 @@ class MaxShutter(BinarySensorEntity):
         self._name = name
         self._device_id = device_id
         self._connection = connection
+
+        self._is_open = None
+
+        self._battery_low = None
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def unique_id(self) -> str:
+        return self._device_id
+
+    @property
+    def should_poll(self) -> bool:
+        return False
+
+    @property
+    def device_class(self) -> str:
+        return DEVICE_CLASS_WINDOW
+
+    @property
+    def is_on(self) -> bool:
+        return self._is_open
+
+    @property
+    def extra_state_attributes(self) -> Mapping[str, Any]:
+        return {
+            ATTR_BATTERY_LOW: self._battery_low
+        }
