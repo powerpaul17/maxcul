@@ -23,6 +23,7 @@ from homeassistant.components.maxcube.climate import (
 from homeassistant.config_entries import ConfigEntry
 
 from homeassistant.const import (
+    ATTR_MODE,
     CONF_DEVICES,
     CONF_NAME,
     CONF_TYPE,
@@ -42,6 +43,7 @@ from custom_components.maxcul import (
     CONF_DEVICE_PATH,
     DOMAIN,
     SIGNAL_DEVICE_PAIRED,
+    SIGNAL_THERMOSTAT_UPDATE,
     MaxCulConnection
 )
 
@@ -54,6 +56,8 @@ from custom_components.maxcul.pymaxcul.maxcul._const import (
 
 from custom_components.maxcul.pymaxcul.maxcul import (
     ATTR_BATTERY_LOW,
+    ATTR_DESIRED_TEMPERATURE,
+    ATTR_MEASURED_TEMPERATURE,
     MODE_AUTO,
     MODE_BOOST,
     MODE_MANUAL,
@@ -121,6 +125,38 @@ class MaxThermostat(ClimateEntity):
         self._battery_low = None
 
         self._connection.add_paired_device(self._device_id)
+
+    async def async_added_to_hass(self) -> None:
+        @callback
+        def update(payload):
+            device_id = payload.get(ATTR_DEVICE_ID)
+            if device_id != self._device_id:
+                return
+
+            current_temperature = payload.get(ATTR_MEASURED_TEMPERATURE)
+            target_temperature = payload.get(ATTR_DESIRED_TEMPERATURE)
+            valve_position = payload.get(ATTR_VALVE_POSITION)
+            mode = payload.get(ATTR_MODE)
+            battery_low = payload.get(ATTR_BATTERY_LOW)
+
+            if current_temperature is not None:
+                self._current_temperature = current_temperature
+
+            if target_temperature is not None:
+                self._target_temperature = target_temperature
+
+            if valve_position is not None:
+                self._valve_position = valve_position
+
+            if mode is not None:
+                self._mode = mode
+
+            if battery_low is not None:
+                self._battery_low = battery_low
+
+            self.async_schedule_update_ha_state()
+
+        async_dispatcher_connect(self.hass, SIGNAL_THERMOSTAT_UPDATE, update)
 
     @property
     def name(self) -> str:

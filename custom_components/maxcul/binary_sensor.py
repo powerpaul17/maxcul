@@ -8,6 +8,7 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 
 from homeassistant.const import (
+    ATTR_STATE,
     CONF_DEVICES,
     CONF_NAME,
     CONF_TYPE
@@ -26,6 +27,7 @@ from custom_components.maxcul import (
     CONF_DEVICE_PATH,
     DOMAIN,
     SIGNAL_DEVICE_PAIRED,
+    SIGNAL_SHUTTER_UPDATE,
     MaxCulConnection
 )
 
@@ -90,6 +92,21 @@ class MaxShutter(BinarySensorEntity):
         self._battery_low = None
 
         self._connection.add_paired_device(self._device_id)
+
+    async def async_added_to_hass(self) -> None:
+        @callback
+        def update(payload):
+            device_id = payload.get(ATTR_DEVICE_ID)
+            if device_id != self._device_id:
+                return
+
+            self._is_open = payload.get(ATTR_STATE, None)
+
+            self._battery_low = payload.get(ATTR_BATTERY_LOW, None)
+
+            self.async_schedule_update_ha_state()
+
+        async_dispatcher_connect(self.hass, SIGNAL_SHUTTER_UPDATE, update)
 
     @property
     def name(self) -> str:

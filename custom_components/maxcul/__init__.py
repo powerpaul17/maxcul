@@ -13,6 +13,8 @@ from .pymaxcul.maxcul import (
     MaxConnection,
     EVENT_DEVICE_PAIRED,
     EVENT_DEVICE_REPAIRED,
+    EVENT_SHUTTER_UPDATE,
+    EVENT_THERMOSTAT_UPDATE
 )
 
 DOMAIN = 'maxcul'
@@ -30,6 +32,8 @@ ENABLE_PAIRING_SERVICE_SCHEMA = voluptuous.Schema({
 
 SIGNAL_DEVICE_PAIRED = DOMAIN + '.device_paired'
 SIGNAL_DEVICE_REPAIRED = DOMAIN + '.device_repaired'
+SIGNAL_THERMOSTAT_UPDATE = DOMAIN + '.thermostat_update'
+SIGNAL_SHUTTER_UPDATE = DOMAIN + '.shutter_update'
 
 ATTR_CONNECTION_DEVICE_PATH = 'connection_device_path'
 
@@ -101,6 +105,12 @@ class MaxCulConnection:
         elif event == EVENT_DEVICE_REPAIRED:
             payload[ATTR_CONNECTION_DEVICE_PATH] = self._device_path
             async_dispatcher_send(self._hass, SIGNAL_DEVICE_REPAIRED, payload)
+
+        elif event == EVENT_THERMOSTAT_UPDATE:
+            async_dispatcher_send(self._hass, SIGNAL_THERMOSTAT_UPDATE, payload)
+
+        elif event == EVENT_SHUTTER_UPDATE:
+            async_dispatcher_send(self._hass, SIGNAL_SHUTTER_UPDATE, payload)
 
     def enable_pairing(self, duration):
         self._connection.enable_pairing(duration)
