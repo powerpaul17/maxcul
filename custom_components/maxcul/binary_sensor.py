@@ -63,6 +63,18 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
         device = MaxShutter(connection, device_id, device_name)
         async_add_devices([device])
 
+        new_data = {**config_entry.data}
+
+        devices = new_data.get(CONF_DEVICES).copy()
+        devices[device_id] = {
+            CONF_NAME: device_name,
+            CONF_TYPE: SHUTTER_CONTACT
+        }
+
+        new_data[CONF_DEVICES] = devices
+
+        hass.config_entries.async_update_entry(config_entry, data=new_data)
+
     async_dispatcher_connect(hass, SIGNAL_DEVICE_PAIRED, pairedCallback)
 
 
