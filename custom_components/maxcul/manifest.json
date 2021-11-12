@@ -1,0 +1,7 @@
+{
+  "domain": "maxcul",
+  "name": "Max CUL",
+  "version": "0.0.1",
+  "config_flow": true,
+  "requirements": []
+}
