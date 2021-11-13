@@ -13,6 +13,8 @@ from homeassistant.components.climate.const import (
     HVAC_MODE_AUTO,
     HVAC_MODE_HEAT,
     HVAC_MODE_OFF,
+    PRESET_AWAY,
+    PRESET_BOOST,
     PRESET_NONE,
 )
 
@@ -201,12 +203,19 @@ class MaxThermostat(ClimateEntity):
     @property
     def preset_mode(self) -> str or None:
         # TODO
+        if self._mode == MODE_BOOST:
+            return PRESET_BOOST
+        if self._mode == MODE_TEMPORARY:
+            return PRESET_AWAY
+
         return PRESET_NONE
 
     @property
     def preset_modes(self) -> list[str] or None:
         return [
             PRESET_NONE,
+            PRESET_AWAY,
+            PRESET_BOOST
         ]
 
     @property
