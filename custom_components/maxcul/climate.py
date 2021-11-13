@@ -26,6 +26,7 @@ from homeassistant.config_entries import ConfigEntry
 
 from homeassistant.const import (
     ATTR_MODE,
+    ATTR_TEMPERATURE,
     CONF_DEVICES,
     CONF_NAME,
     CONF_TYPE,
@@ -64,10 +65,13 @@ from custom_components.maxcul.pymaxcul.maxcul import (
     MODE_BOOST,
     MODE_MANUAL,
     MODE_TEMPORARY,
+    MIN_TEMPERATURE as OFF_TEMPERATURE,
 )
 
 MIN_TEMPERATURE = 5.0
 MAX_TEMPERATURE = 30.0
+
+DEFAULT_TEMPERATURE = 18
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_devices):
@@ -248,6 +252,43 @@ class MaxThermostat(ClimateEntity):
             ATTR_VALVE_POSITION: self._valve_position,
             ATTR_BATTERY_LOW: self._battery_low
         }
+
+    def set_hvac_mode(self, hvac_mode: str) -> None:
+        new_temperature = self._target_temperature or DEFAULT_TEMPERATURE
+
+        new_hvac_mode = self._hvac_mode_to_mode(hvac_mode)
+        if hvac_mode == HVAC_MODE_OFF:
+            new_temperature = OFF_TEMPERATURE
+
+        self._connection.set_temperature(
+            self._device_id,
+            new_temperature,
+            new_hvac_mode
+        )
+
+    def set_temperature(self, **kwargs) -> None:
+        target_temperature = kwargs.get(ATTR_TEMPERATURE)
+        if target_temperature is None:
+            raise ValueError(
+                f"No {ATTR_TEMPERATURE} parameter passed to set_temperature method."
+            )
+
+        self._connection.set_temperature(
+            self._device_id,
+            target_temperature,
+            self._mode or MODE_MANUAL
+        )
+
+    def set_preset_mode(self, preset_mode: str) -> None:
+        pass
+
+    @staticmethod
+    def _hvac_mode_to_mode(hvac_mode):
+        return {
+            HVAC_MODE_OFF: MODE_MANUAL,
+            HVAC_MODE_AUTO: MODE_AUTO,
+            HVAC_MODE_HEAT: MODE_MANUAL
+        }.get(hvac_mode)
 
     @staticmethod
     def _mode_to_hvac_mode(mode):

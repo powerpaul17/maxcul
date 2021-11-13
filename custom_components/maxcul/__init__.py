@@ -117,3 +117,10 @@ class MaxCulConnection:
 
     def add_paired_device(self, device_id):
         self._connection.add_paired_device(device_id)
+
+    def set_temperature(self, device_id: str, target_temperature: float, mode):
+        self._connection.set_temperature(
+            device_id,
+            target_temperature,
+            mode
+        )
