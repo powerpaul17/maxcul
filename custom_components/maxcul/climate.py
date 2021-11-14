@@ -228,7 +228,7 @@ class MaxThermostat(ClimateEntity):
 
     @property
     def hvac_action(self) -> str:
-        if self._valve_position > 0:
+        if self._valve_position is not None and self._valve_position > 0:
             return CURRENT_HVAC_HEAT
 
         return (
