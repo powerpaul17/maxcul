@@ -19,7 +19,7 @@ from custom_components.maxcul import (
 )
 
 from serial import Serial, SerialException
-from serial.rfc2217 import Serial as TelnetSerial, SerialException as TelnetSerialException
+from custom_components.maxcul.pymaxcul.maxcul._telnet import TelnetSerial
 
 CONF_MANUAL_PATH = 'Enter manually'
 
@@ -120,7 +120,7 @@ class MaxculFlowHandler(ConfigFlow, domain=DOMAIN):
             host = user_input[CONF_HOST]
             port = user_input[CONF_PORT]
 
-            device_path='rfc2217://' + host + ':' + str(port)
+            device_path='telnet://' + host + ':' + str(port)
 
             if await test_connection(device_path):
                 return self.async_create_entry(
@@ -142,7 +142,7 @@ class MaxculFlowHandler(ConfigFlow, domain=DOMAIN):
 async def test_connection(device_path: str) -> bool:
     com_port = None
     try:
-        if device_path.startswith('rfc2217://'):
+        if device_path.startswith('telnet://'):
             com_port = TelnetSerial(device_path)
         else:
             com_port = Serial(device_path)
@@ -159,7 +159,7 @@ def get_cul_version(com_port: Serial) -> bool:
 
     # get CUL FW version
     for _ in range(10):
-        com_port.write("V")
+        com_port.write(b'V')
         time.sleep(1)
         cul_version = com_port.readline() or None
         if cul_version is not None:
