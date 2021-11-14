@@ -94,7 +94,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
         if device_type is not HEATING_THERMOSTAT:
             return
 
-        device_id = payload.get(ATTR_DEVICE_ID)
+        device_id = str(payload.get(ATTR_DEVICE_ID))
         device_name = payload.get(ATTR_DEVICE_SERIAL)
 
         device = MaxThermostat(connection, device_id, device_name)
