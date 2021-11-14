@@ -130,13 +130,13 @@ class MaxThermostat(ClimateEntity):
         self._mode = None
         self._battery_low = None
 
-        self._connection.add_paired_device(self._device_id)
+        self._connection.add_paired_device(self.sender_id)
 
     async def async_added_to_hass(self) -> None:
         @callback
         def update(payload):
             device_id = payload.get(ATTR_DEVICE_ID)
-            if device_id != self._device_id:
+            if device_id != self.sender_id:
                 return
 
             current_temperature = payload.get(ATTR_MEASURED_TEMPERATURE)
@@ -171,6 +171,10 @@ class MaxThermostat(ClimateEntity):
     @property
     def unique_id(self) -> str:
         return self._device_id
+
+    @property
+    def sender_id(self) -> int:
+        return int(self._device_id)
 
     @property
     def should_poll(self) -> bool:
@@ -261,7 +265,7 @@ class MaxThermostat(ClimateEntity):
             new_temperature = OFF_TEMPERATURE
 
         self._connection.set_temperature(
-            self._device_id,
+            self.sender_id,
             new_temperature,
             new_hvac_mode
         )
@@ -274,7 +278,7 @@ class MaxThermostat(ClimateEntity):
             )
 
         self._connection.set_temperature(
-            self._device_id,
+            self.sender_id,
             target_temperature,
             self._mode or MODE_MANUAL
         )

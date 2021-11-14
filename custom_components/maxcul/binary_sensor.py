@@ -91,13 +91,13 @@ class MaxShutter(BinarySensorEntity):
 
         self._battery_low = None
 
-        self._connection.add_paired_device(self._device_id)
+        self._connection.add_paired_device(self.sender_id)
 
     async def async_added_to_hass(self) -> None:
         @callback
         def update(payload):
             device_id = payload.get(ATTR_DEVICE_ID)
-            if device_id != self._device_id:
+            if device_id != self.sender_id:
                 return
 
             self._is_open = payload.get(ATTR_STATE, None)
@@ -115,6 +115,10 @@ class MaxShutter(BinarySensorEntity):
     @property
     def unique_id(self) -> str:
         return self._device_id
+
+    @property
+    def sender_id(self) -> int:
+        return int(self._device_id)
 
     @property
     def should_poll(self) -> bool:
