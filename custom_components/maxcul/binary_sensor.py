@@ -20,6 +20,7 @@ from homeassistant.core import (
 )
 
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
+from homeassistant.helpers.entity import DeviceInfo
 
 from custom_components.maxcul import (
     ATTR_CONNECTION_DEVICE_PATH,
@@ -95,6 +96,15 @@ class MaxShutter(BinarySensorEntity):
         self._battery_low = None
 
         self._connection.add_paired_device(self.sender_id)
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        return {
+            "identifiers": {
+                (DOMAIN, self.unique_id)
+            },
+            "name": self.name,
+        }
 
     async def async_added_to_hass(self) -> None:
         @callback
