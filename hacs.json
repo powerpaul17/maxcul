@@ -1,0 +1,8 @@
+{
+  "name": "Max CUL",
+  "render_readme": true,
+  "domains": [
+    "climate",
+    "binary_sensor"
+  ]
+}
