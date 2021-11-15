@@ -97,18 +97,21 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
         device_id = str(payload.get(ATTR_DEVICE_ID))
         device_name = payload.get(ATTR_DEVICE_SERIAL)
 
+        devices = config_entry.data.get(CONF_DEVICES)
+        if device_id in devices:
+            return
+
         device = MaxThermostat(connection, device_id, device_name)
         async_add_devices([device])
 
         new_data = {**config_entry.data}
 
-        devices = new_data.get(CONF_DEVICES).copy()
-        devices[device_id] = {
+        new_devices = devices.copy()
+        new_devices[device_id] = {
             CONF_NAME: device_name,
             CONF_TYPE: HEATING_THERMOSTAT
         }
-
-        new_data[CONF_DEVICES] = devices
+        new_data[CONF_DEVICES] = new_devices
 
         hass.config_entries.async_update_entry(config_entry, data=new_data)
 
