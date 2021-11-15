@@ -9,7 +9,7 @@ from homeassistant.core import (
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
-from .pymaxcul.maxcul import (
+from maxcul import (
     MaxConnection,
     EVENT_DEVICE_PAIRED,
     EVENT_DEVICE_REPAIRED,

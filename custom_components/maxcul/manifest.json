@@ -6,6 +6,8 @@
   "issue_tracker": "https://github.com/powerpaul17/maxcul/issues",
   "codeowners": [ "@powerpaul17" ],
   "config_flow": true,
-  "requirements": [],
+  "requirements": [
+    "git+https://github.com/powerpaul17/pymaxcul.git@master#pymaxcul==99.9.9"
+  ],
   "iot_class": "local_push"
 }

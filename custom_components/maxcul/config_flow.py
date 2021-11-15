@@ -19,7 +19,7 @@ from custom_components.maxcul import (
 )
 
 from serial import Serial, SerialException
-from custom_components.maxcul.pymaxcul.maxcul._telnet import TelnetSerial
+from maxcul._telnet import TelnetSerial
 
 CONF_MANUAL_PATH = 'Enter manually'
 

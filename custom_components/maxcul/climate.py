@@ -51,14 +51,14 @@ from custom_components.maxcul import (
     MaxCulConnection
 )
 
-from custom_components.maxcul.pymaxcul.maxcul._const import (
+from maxcul._const import (
     ATTR_DEVICE_ID,
     ATTR_DEVICE_TYPE,
     ATTR_DEVICE_SERIAL,
     HEATING_THERMOSTAT
 )
 
-from custom_components.maxcul.pymaxcul.maxcul import (
+from maxcul import (
     ATTR_BATTERY_LOW,
     ATTR_DESIRED_TEMPERATURE,
     ATTR_MEASURED_TEMPERATURE,
