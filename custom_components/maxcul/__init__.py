@@ -7,7 +7,7 @@ from homeassistant.core import (
 )
 
 import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.dispatcher import async_dispatcher_send
+from homeassistant.helpers.dispatcher import dispatcher_send
 
 from maxcul import (
     MaxConnection,
@@ -100,17 +100,17 @@ class MaxCulConnection:
     def _callback(self, event, payload):
         if event == EVENT_DEVICE_PAIRED:
             payload[ATTR_CONNECTION_DEVICE_PATH] = self._device_path
-            async_dispatcher_send(self._hass, SIGNAL_DEVICE_PAIRED, payload)
+            dispatcher_send(self._hass, SIGNAL_DEVICE_PAIRED, payload)
 
         elif event == EVENT_DEVICE_REPAIRED:
             payload[ATTR_CONNECTION_DEVICE_PATH] = self._device_path
-            async_dispatcher_send(self._hass, SIGNAL_DEVICE_REPAIRED, payload)
+            dispatcher_send(self._hass, SIGNAL_DEVICE_REPAIRED, payload)
 
         elif event == EVENT_THERMOSTAT_UPDATE:
-            async_dispatcher_send(self._hass, SIGNAL_THERMOSTAT_UPDATE, payload)
+            dispatcher_send(self._hass, SIGNAL_THERMOSTAT_UPDATE, payload)
 
         elif event == EVENT_SHUTTER_UPDATE:
-            async_dispatcher_send(self._hass, SIGNAL_SHUTTER_UPDATE, payload)
+            dispatcher_send(self._hass, SIGNAL_SHUTTER_UPDATE, payload)
 
     def enable_pairing(self, duration):
         self._connection.enable_pairing(duration)
