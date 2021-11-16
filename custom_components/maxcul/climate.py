@@ -47,6 +47,7 @@ from custom_components.maxcul import (
     CONF_DEVICE_PATH,
     DOMAIN,
     SIGNAL_DEVICE_PAIRED,
+    SIGNAL_DEVICE_REPAIRED,
     SIGNAL_THERMOSTAT_UPDATE,
     MaxCulConnection
 )
@@ -117,6 +118,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
         hass.config_entries.async_update_entry(config_entry, data=new_data)
 
     async_dispatcher_connect(hass, SIGNAL_DEVICE_PAIRED, pairedCallback)
+    async_dispatcher_connect(hass, SIGNAL_DEVICE_REPAIRED, pairedCallback)
 
 
 class MaxThermostat(ClimateEntity):
