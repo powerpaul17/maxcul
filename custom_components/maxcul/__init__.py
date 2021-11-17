@@ -46,10 +46,12 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         }
 
     device_path = config_entry.data.get(CONF_DEVICE_PATH)
+    sender_id = config_entry.options.get(CONF_SENDER_ID)
 
     connection = MaxCulConnection(
         hass,
-        device_path=device_path
+        device_path=device_path,
+        sender_id=sender_id
     )
     connection.start()
 
@@ -84,16 +86,20 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
 
 class MaxCulConnection:
 
-    def __init__(self, hass, device_path):
+    def __init__(self, hass: HomeAssistant, device_path: str, sender_id=None):
         self._hass = hass
         self._device_path = device_path
+
+        if not sender_id:
+            sender_id = 0x123456
 
         def callback(event, payload):
             self._callback(event, payload)
 
         self._connection = MaxConnection(
             device_path=device_path,
-            callback=callback
+            callback=callback,
+            sender_id=sender_id
         )
 
     def start(self):
@@ -120,7 +126,7 @@ class MaxCulConnection:
     def add_paired_device(self, device_id):
         self._connection.add_paired_device(device_id)
 
-    def set_temperature(self, device_id: str, target_temperature: float, mode):
+    def set_temperature(self, device_id: int, target_temperature: float, mode):
         self._connection.set_temperature(
             device_id,
             target_temperature,
