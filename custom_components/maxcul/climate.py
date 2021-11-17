@@ -231,6 +231,9 @@ class MaxThermostat(ClimateEntity):
         if self._mode == MODE_TEMPORARY:
             return PRESET_AWAY
 
+        if not self._target_temperature:
+            return PRESET_NONE
+
         return PRESET_NONE
 
     @property
