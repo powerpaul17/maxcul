@@ -225,7 +225,6 @@ class MaxThermostat(ClimateEntity):
 
     @property
     def preset_mode(self) -> str or None:
-        # TODO
         if self._mode == MODE_BOOST:
             return PRESET_BOOST
         if self._mode == MODE_TEMPORARY:
@@ -302,7 +301,29 @@ class MaxThermostat(ClimateEntity):
         )
 
     def set_preset_mode(self, preset_mode: str) -> None:
-        pass
+        if preset_mode == PRESET_NONE:
+            self._connection.set_temperature(
+                self.sender_id,
+                self._target_temperature,
+                MODE_MANUAL
+            )
+
+        elif preset_mode == PRESET_AWAY:
+            self._connection.set_temperature(
+                self.sender_id,
+                self._target_temperature,
+                MODE_TEMPORARY
+            )
+
+        elif preset_mode == PRESET_BOOST:
+            self._connection.set_temperature(
+                self.sender_id,
+                self._target_temperature,
+                MODE_BOOST
+            )
+
+        else:
+            raise ValueError(f"Unsupported preset mode {preset_mode}")
 
     @staticmethod
     def _hvac_mode_to_mode(hvac_mode):
