@@ -22,6 +22,8 @@ DOMAIN = 'maxcul'
 CONF_CONNECTIONS = 'connections'
 CONF_DEVICE_PATH = 'device_path'
 
+CONF_SENDER_ID = 'sender_id'
+
 SERVICE_CONF_DEVICE_PATH = 'device_path'
 SERVICE_CONF_DURATION = 'duration'
 

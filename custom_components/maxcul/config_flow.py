@@ -9,16 +9,23 @@ from homeassistant.const import (
 import serial.tools.list_ports
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigFlow
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    OptionsFlow
+)
+
+from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.components import usb
 
 from custom_components.maxcul import (
     CONF_DEVICE_PATH,
+    CONF_SENDER_ID,
     DOMAIN
 )
 
-from serial import Serial, SerialException
+from serial import Serial
 from maxcul._telnet import TelnetSerial
 
 CONF_MANUAL_PATH = 'Enter manually'
@@ -139,6 +146,12 @@ class MaxculFlowHandler(ConfigFlow, domain=DOMAIN):
         })
         return self.async_show_form(step_id='pick_host', data_schema=schema, errors=errors)
 
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry):
+        return MaxculOptionsFlowHandler(config_entry)
+
+
 async def test_connection(device_path: str) -> bool:
     com_port = None
     try:
@@ -171,3 +184,20 @@ def get_cul_version(com_port: Serial) -> bool:
         return False
 
     return True
+
+
+class MaxculOptionsFlowHandler(OptionsFlow):
+
+    def __init__(self, config_entry: ConfigEntry):
+        self._config_entry = config_entry
+
+    async def async_step_init(self, user_input=None):
+        errors = {}
+
+        if user_input is not None:
+            return self.async_create_entry(title='', data=user_input)
+
+        schema = vol.Schema({
+            vol.Optional(CONF_SENDER_ID, default=self._config_entry.options.get(CONF_SENDER_ID) or 0x123456): int
+        })
+        return self.async_show_form(step_id='init', data_schema=schema, errors=errors)
