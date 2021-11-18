@@ -156,7 +156,7 @@ async def test_connection(device_path: str) -> bool:
     com_port = None
     try:
         if device_path.startswith('telnet://'):
-            com_port = TelnetSerial(device_path)
+            com_port = TelnetSerial(device_path, 0.5)
         else:
             com_port = Serial(device_path)
     except:
