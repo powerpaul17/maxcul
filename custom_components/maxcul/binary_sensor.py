@@ -38,7 +38,8 @@ from maxcul._const import (
     ATTR_DEVICE_ID,
     ATTR_DEVICE_TYPE,
     ATTR_DEVICE_SERIAL,
-    SHUTTER_CONTACT
+    SHUTTER_CONTACT,
+    SHUTTER_OPEN
 )
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_devices):
@@ -145,7 +146,7 @@ class MaxShutter(BinarySensorEntity):
 
     @property
     def is_on(self) -> bool:
-        return self._is_open
+        return self._is_open == SHUTTER_OPEN
 
     @property
     def extra_state_attributes(self) -> Mapping[str, Any]:
