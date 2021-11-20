@@ -60,7 +60,6 @@ from maxcul._const import (
 )
 
 from maxcul import (
-    ATTR_BATTERY_LOW,
     ATTR_DESIRED_TEMPERATURE,
     ATTR_MEASURED_TEMPERATURE,
     MODE_AUTO,
@@ -134,7 +133,6 @@ class MaxThermostat(ClimateEntity):
 
         # auto manual temporary boost
         self._mode = None
-        self._battery_low = None
 
         self._connection.add_paired_device(self.sender_id)
 
@@ -158,7 +156,6 @@ class MaxThermostat(ClimateEntity):
             target_temperature = payload.get(ATTR_DESIRED_TEMPERATURE)
             valve_position = payload.get(ATTR_VALVE_POSITION)
             mode = payload.get(ATTR_MODE)
-            battery_low = payload.get(ATTR_BATTERY_LOW)
 
             if current_temperature is not None:
                 self._current_temperature = current_temperature
@@ -171,9 +168,6 @@ class MaxThermostat(ClimateEntity):
 
             if mode is not None:
                 self._mode = mode
-
-            if battery_low is not None:
-                self._battery_low = battery_low
 
             self.async_schedule_update_ha_state()
 
@@ -270,8 +264,7 @@ class MaxThermostat(ClimateEntity):
     @property
     def extra_state_attributes(self) -> Mapping[str, Any]:
         return {
-            ATTR_VALVE_POSITION: self._valve_position,
-            ATTR_BATTERY_LOW: self._battery_low
+            ATTR_VALVE_POSITION: self._valve_position
         }
 
     def set_hvac_mode(self, hvac_mode: str) -> None:
