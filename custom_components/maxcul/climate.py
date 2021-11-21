@@ -140,7 +140,7 @@ class MaxThermostat(ClimateEntity):
     def device_info(self) -> DeviceInfo:
         return {
             "identifiers": {
-                (DOMAIN, self.unique_id)
+                (DOMAIN, self._device_id)
             },
             "name": self.name,
         }
