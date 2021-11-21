@@ -1,4 +1,9 @@
 from homeassistant.config_entries import ConfigEntry
+
+from homeassistant.const import (
+    CONF_DEVICES
+)
+
 import voluptuous
 
 from homeassistant.core import (
@@ -8,6 +13,7 @@ from homeassistant.core import (
 
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.dispatcher import dispatcher_send
+from homeassistant.helpers import device_registry as dr
 
 from maxcul import (
     MaxConnection,
@@ -56,6 +62,12 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
     connection.start()
 
     hass.data[DOMAIN][CONF_CONNECTIONS][device_path] = connection
+
+    device_registry = await dr.async_get_registry(hass)
+    for device_entry in dr.async_entries_for_config_entry(device_registry, config_entry.entry_id):
+        for (_, device_id) in device_entry.identifiers:
+            if device_id not in config_entry.data.get(CONF_DEVICES).keys():
+                device_registry.async_remove_device(device_entry.id)
 
     def _service_enable_pairing(service: ServiceCall):
         service_device_path = service.data[SERVICE_CONF_DEVICE_PATH]
