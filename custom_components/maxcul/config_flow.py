@@ -1,3 +1,7 @@
+'''
+Config flow for MaxCUL custom component
+'''
+
 import time
 
 from homeassistant.const import (
@@ -5,9 +9,6 @@ from homeassistant.const import (
     CONF_PORT,
     CONF_DEVICES
 )
-
-import serial.tools.list_ports
-import voluptuous as vol
 
 from homeassistant.config_entries import (
     ConfigEntry,
@@ -19,20 +20,23 @@ from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.components import usb
 
+from serial import Serial
+from maxcul._telnet import TelnetSerial
+import serial.tools.list_ports
+import voluptuous as vol
+
 from custom_components.maxcul import (
     CONF_DEVICE_PATH,
     CONF_SENDER_ID,
     DOMAIN
 )
 
-from serial import Serial
-from maxcul._telnet import TelnetSerial
-
 CONF_MANUAL_PATH = 'Enter manually'
 
 CONF_DEVICE_TYPE = 'device_type'
 
 class MaxculFlowHandler(ConfigFlow, domain=DOMAIN):
+    ''' Config flow handler for MaxCUL custom component '''
 
     def __init__(self) -> None:
         self._com_ports = []
@@ -40,7 +44,7 @@ class MaxculFlowHandler(ConfigFlow, domain=DOMAIN):
     async def async_step_user(self, user_input=None) -> FlowResult:
         self._com_ports = await self.hass.async_add_executor_job(serial.tools.list_ports.comports)
 
-        if not len(self._com_ports):
+        if not self._com_ports:
             return await self.async_step_pick_host()
 
         if user_input is not None:
@@ -56,6 +60,8 @@ class MaxculFlowHandler(ConfigFlow, domain=DOMAIN):
         return self.async_show_form(step_id='user', data_schema=schema)
 
     async def async_step_device_picker(self, user_input=None) -> FlowResult:
+        ''' Step for picking a serial device '''
+
         list_of_ports = [
             f"{p}, s/n: {p.serial_number or 'n/a'}"
             + (f" - {p.manufacturer}" if p.manufacturer else '')
@@ -99,6 +105,8 @@ class MaxculFlowHandler(ConfigFlow, domain=DOMAIN):
         return self.async_show_form(step_id='device_picker', data_schema=schema, errors=errors)
 
     async def async_step_manual_device_path(self, user_input=None) -> FlowResult:
+        ''' Step for entering a device path manually '''
+
         errors = {}
 
         if user_input is not None:
@@ -121,6 +129,8 @@ class MaxculFlowHandler(ConfigFlow, domain=DOMAIN):
         return self.async_show_form(step_id='manual_device_path', data_schema=schema, errors=errors)
 
     async def async_step_pick_host(self, user_input=None) -> FlowResult:
+        ''' Step for entering a host/port combination for network connections of CUL devices '''
+
         errors = {}
 
         if user_input is not None:
@@ -153,6 +163,8 @@ class MaxculFlowHandler(ConfigFlow, domain=DOMAIN):
 
 
 async def test_connection(device_path: str) -> bool:
+    ''' Check if device is reachable and a CUL device '''
+
     com_port = None
     try:
         if device_path.startswith('telnet://'):
@@ -164,7 +176,9 @@ async def test_connection(device_path: str) -> bool:
 
     return get_cul_version(com_port)
 
-def get_cul_version(com_port: Serial) -> bool:
+def get_cul_version(com_port: Serial or TelnetSerial) -> bool:
+    ''' Determine CUL version of serial/telnet device '''
+
     cul_version = None
 
     # was required for my nanoCUL
@@ -187,17 +201,21 @@ def get_cul_version(com_port: Serial) -> bool:
 
 
 class MaxculOptionsFlowHandler(OptionsFlow):
+    ''' Options flow handler for MaxCUL custom component '''
 
     def __init__(self, config_entry: ConfigEntry):
         self._config_entry = config_entry
 
     async def async_step_init(self, user_input=None):
+        ''' Start an options flow '''
+
         errors = {}
 
         if user_input is not None:
             return self.async_create_entry(title='', data=user_input)
 
+        sender_id = self._config_entry.options.get(CONF_SENDER_ID) or 0x123456
         schema = vol.Schema({
-            vol.Optional(CONF_SENDER_ID, default=self._config_entry.options.get(CONF_SENDER_ID) or 0x123456): int
+            vol.Optional(CONF_SENDER_ID, default=sender_id): int
         })
         return self.async_show_form(step_id='init', data_schema=schema, errors=errors)

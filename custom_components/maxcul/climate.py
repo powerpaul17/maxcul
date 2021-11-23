@@ -1,3 +1,7 @@
+'''
+Climate platform module of MaxCUL integration
+'''
+
 from homeassistant.config_entries import ConfigEntry
 
 from homeassistant.const import (
@@ -13,6 +17,13 @@ from homeassistant.core import (
 
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
+from maxcul._const import (
+    ATTR_DEVICE_ID,
+    ATTR_DEVICE_TYPE,
+    ATTR_DEVICE_SERIAL,
+    HEATING_THERMOSTAT
+)
+
 from custom_components.maxcul import (
     ATTR_CONNECTION_DEVICE_PATH,
     CONF_CONNECTIONS,
@@ -24,17 +35,13 @@ from custom_components.maxcul import (
 
 from custom_components.maxcul.max_thermostat import MaxThermostat
 
-from maxcul._const import (
-    ATTR_DEVICE_ID,
-    ATTR_DEVICE_TYPE,
-    ATTR_DEVICE_SERIAL,
-    HEATING_THERMOSTAT
-)
-
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_devices):
+    ''' Set up the climate platform for the MaxCUL integration from a config entry. '''
+
     device_path = config_entry.data.get(CONF_DEVICE_PATH)
     connection = hass.data[DOMAIN][CONF_CONNECTIONS][device_path]
+
     devices = [
         MaxThermostat(connection, device_id, device[CONF_NAME])
         for device_id, device in config_entry.data.get(CONF_DEVICES).items()
@@ -43,7 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
     async_add_devices(devices)
 
     @callback
-    def pairedCallback(payload):
+    def paired_callback(payload):
         connection_device_path = payload.get(ATTR_CONNECTION_DEVICE_PATH)
         if connection_device_path is not device_path:
             return
@@ -73,5 +80,5 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
 
         hass.config_entries.async_update_entry(config_entry, data=new_data)
 
-    async_dispatcher_connect(hass, SIGNAL_DEVICE_PAIRED, pairedCallback)
-    async_dispatcher_connect(hass, SIGNAL_DEVICE_REPAIRED, pairedCallback)
+    async_dispatcher_connect(hass, SIGNAL_DEVICE_PAIRED, paired_callback)
+    async_dispatcher_connect(hass, SIGNAL_DEVICE_REPAIRED, paired_callback)

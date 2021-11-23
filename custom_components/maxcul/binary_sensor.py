@@ -1,3 +1,7 @@
+'''
+Binary sensor platform module of MaxCUL integration
+'''
+
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
     DEVICE_CLASS_BATTERY
@@ -6,7 +10,6 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 
 from homeassistant.const import (
-    ATTR_STATE,
     CONF_DEVICES,
     CONF_NAME,
     CONF_TYPE
@@ -20,6 +23,14 @@ from homeassistant.core import (
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import DeviceInfo
 
+from maxcul._const import (
+    ATTR_BATTERY_LOW,
+    ATTR_DEVICE_ID,
+    ATTR_DEVICE_TYPE,
+    ATTR_DEVICE_SERIAL,
+    SHUTTER_CONTACT
+)
+
 from custom_components.maxcul import (
     ATTR_CONNECTION_DEVICE_PATH,
     CONF_CONNECTIONS,
@@ -32,18 +43,12 @@ from custom_components.maxcul import (
     MaxCulConnection
 )
 
-from maxcul._const import (
-    ATTR_BATTERY_LOW,
-    ATTR_DEVICE_ID,
-    ATTR_DEVICE_TYPE,
-    ATTR_DEVICE_SERIAL,
-    SHUTTER_CONTACT
-)
-
 from custom_components.maxcul.max_shutter import MaxShutter
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_devices):
+    ''' Set up the binary sensor platform for the MaxCUL integration from a config entry. '''
+
     device_path = config_entry.data.get(CONF_DEVICE_PATH)
     connection = hass.data[DOMAIN][CONF_CONNECTIONS][device_path]
 
@@ -56,7 +61,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
     async_add_devices(devices)
 
     @callback
-    def pairedCallback(payload):
+    def paired_callback(payload):
         connection_device_path = payload.get(ATTR_CONNECTION_DEVICE_PATH)
         if connection_device_path is not device_path:
             return
@@ -88,11 +93,12 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
 
         async_add_devices(devices_to_add)
 
-    async_dispatcher_connect(hass, SIGNAL_DEVICE_PAIRED, pairedCallback)
-    async_dispatcher_connect(hass, SIGNAL_DEVICE_REPAIRED, pairedCallback)
+    async_dispatcher_connect(hass, SIGNAL_DEVICE_PAIRED, paired_callback)
+    async_dispatcher_connect(hass, SIGNAL_DEVICE_REPAIRED, paired_callback)
 
 
 class MaxBattery(BinarySensorEntity):
+    ''' Battery sensor class of Max devices '''
 
     def __init__(self, connection: MaxCulConnection, device_id, name):
         self._name = name
@@ -136,6 +142,7 @@ class MaxBattery(BinarySensorEntity):
 
     @property
     def sender_id(self) -> int:
+        ''' Return the RF address of the device '''
         return int(self._device_id)
 
     @property

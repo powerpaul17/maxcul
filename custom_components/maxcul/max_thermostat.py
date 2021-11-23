@@ -1,3 +1,7 @@
+'''
+Climate entity module for Max Thermostats
+'''
+
 from typing import Any, Mapping
 
 from homeassistant.components.climate import (
@@ -33,18 +37,6 @@ from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import DeviceInfo
 
-from custom_components.maxcul import (
-    DOMAIN,
-    SIGNAL_THERMOSTAT_UPDATE,
-    MaxCulConnection
-)
-
-from custom_components.maxcul.const import (
-    MIN_TEMPERATURE,
-    MAX_TEMPERATURE,
-    DEFAULT_TEMPERATURE
-)
-
 from maxcul._const import (
     ATTR_DEVICE_ID
 )
@@ -59,8 +51,21 @@ from maxcul import (
     MIN_TEMPERATURE as OFF_TEMPERATURE,
 )
 
+from custom_components.maxcul import (
+    DOMAIN,
+    SIGNAL_THERMOSTAT_UPDATE,
+    MaxCulConnection
+)
+
+from custom_components.maxcul.const import (
+    MIN_TEMPERATURE,
+    MAX_TEMPERATURE,
+    DEFAULT_TEMPERATURE
+)
+
 
 class MaxThermostat(ClimateEntity):
+    ''' Climate entity class for Max Thermostats '''
 
     def __init__(self, connection: MaxCulConnection, device_id: str, name: str):
         self._name = name
@@ -123,6 +128,7 @@ class MaxThermostat(ClimateEntity):
 
     @property
     def sender_id(self) -> int:
+        ''' Return the RF address of the device '''
         return int(self._device_id)
 
     @property

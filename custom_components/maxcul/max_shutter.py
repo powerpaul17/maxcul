@@ -1,3 +1,7 @@
+'''
+Binary sensor entity module for Max window shutter sensors
+'''
+
 from typing import Any, Mapping
 
 from homeassistant.components.binary_sensor import (
@@ -18,19 +22,20 @@ from homeassistant.core import (
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import DeviceInfo
 
+from maxcul._const import (
+    ATTR_DEVICE_ID,
+    SHUTTER_OPEN
+)
+
 from custom_components.maxcul import (
     DOMAIN,
     SIGNAL_SHUTTER_UPDATE,
     MaxCulConnection
 )
 
-from maxcul._const import (
-    ATTR_DEVICE_ID,
-    SHUTTER_OPEN
-)
-
 
 class MaxShutter(BinarySensorEntity):
+    ''' Binary sensor entity class for Max window shutter sensors '''
 
     def __init__(self, connection: MaxCulConnection, device_id, name):
         self._name = name
@@ -73,6 +78,7 @@ class MaxShutter(BinarySensorEntity):
 
     @property
     def sender_id(self) -> int:
+        ''' Return the RF address of the device '''
         return int(self._device_id)
 
     @property

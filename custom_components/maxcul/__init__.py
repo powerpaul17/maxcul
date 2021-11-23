@@ -1,10 +1,15 @@
+'''
+MaxCUL custom component for Home Assistant
+'''
+
+import voluptuous
+
 from homeassistant.config_entries import ConfigEntry
 
 from homeassistant.const import (
+    ATTR_DEVICE_ID,
     CONF_DEVICES
 )
-
-import voluptuous
 
 from homeassistant.core import (
     HomeAssistant,
@@ -46,6 +51,8 @@ SIGNAL_SHUTTER_UPDATE = DOMAIN + '.shutter_update'
 ATTR_CONNECTION_DEVICE_PATH = 'connection_device_path'
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
+    ''' Set up MaxCUL custom component from a config entry '''
+
     if DOMAIN not in hass.data:
         hass.data[DOMAIN] = {
             CONF_CONNECTIONS: {}
@@ -115,6 +122,7 @@ class MaxCulConnection:
         )
 
     def start(self):
+        ''' Start the connection thread '''
         self._connection.start()
 
     def _callback(self, event, payload):
@@ -133,12 +141,16 @@ class MaxCulConnection:
             dispatcher_send(self._hass, SIGNAL_SHUTTER_UPDATE, payload)
 
     def enable_pairing(self, duration):
+        ''' Enable pairing of devices '''
         self._connection.enable_pairing(duration)
 
     def add_paired_device(self, device_id):
+        ''' Add a device id to the paired devices '''
         self._connection.add_paired_device(device_id)
 
     def set_temperature(self, device_id: int, target_temperature: float, mode):
+        ''' Set the target temperature of a thermostat device '''
+
         self._connection.set_temperature(
             device_id,
             target_temperature,
