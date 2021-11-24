@@ -134,7 +134,7 @@ class MaxBattery(BinarySensorEntity):
 
     @property
     def name(self) -> str:
-        return self._name
+        return self._name + '-battery'
 
     @property
     def unique_id(self) -> str:
