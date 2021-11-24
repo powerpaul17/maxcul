@@ -43,7 +43,13 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
     connection = hass.data[DOMAIN][CONF_CONNECTIONS][device_path]
 
     devices = [
-        MaxThermostat(connection, device_id, device[CONF_NAME])
+        MaxThermostat(
+            hass,
+            config_entry,
+            connection,
+            device_id,
+            device[CONF_NAME]
+        )
         for device_id, device in config_entry.data.get(CONF_DEVICES).items()
         if device[CONF_TYPE] == HEATING_THERMOSTAT
     ]
@@ -66,19 +72,8 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
         if device_id in devices:
             return
 
-        device = MaxThermostat(connection, device_id, device_name)
+        device = MaxThermostat(hass, config_entry, connection, device_id, device_name)
         async_add_devices([device])
-
-        new_data = {**config_entry.data}
-
-        new_devices = devices.copy()
-        new_devices[device_id] = {
-            CONF_NAME: device_name,
-            CONF_TYPE: HEATING_THERMOSTAT
-        }
-        new_data[CONF_DEVICES] = new_devices
-
-        hass.config_entries.async_update_entry(config_entry, data=new_data)
 
     async_dispatcher_connect(hass, SIGNAL_DEVICE_PAIRED, paired_callback)
     async_dispatcher_connect(hass, SIGNAL_DEVICE_REPAIRED, paired_callback)

@@ -3,6 +3,7 @@ Binary sensor entity module for Max window shutter sensors
 '''
 
 from typing import Any, Mapping
+import copy
 
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
@@ -12,10 +13,14 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 
 from homeassistant.const import (
-    ATTR_STATE
+    ATTR_STATE,
+    CONF_DEVICES,
+    CONF_NAME,
+    CONF_TYPE
 )
 
 from homeassistant.core import (
+    HomeAssistant,
     callback
 )
 
@@ -24,6 +29,7 @@ from homeassistant.helpers.entity import DeviceInfo
 
 from maxcul._const import (
     ATTR_DEVICE_ID,
+    SHUTTER_CONTACT,
     SHUTTER_OPEN
 )
 
@@ -37,7 +43,17 @@ from custom_components.maxcul import (
 class MaxShutter(BinarySensorEntity):
     ''' Binary sensor entity class for Max window shutter sensors '''
 
-    def __init__(self, connection: MaxCulConnection, device_id, name):
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        config_entry: ConfigEntry,
+        connection: MaxCulConnection,
+        device_id: str,
+        name: str
+    ):
+        self._hass = hass
+        self._config_entry = config_entry
+
         self._name = name
         self._device_id = device_id
         self._connection = connection
@@ -45,6 +61,14 @@ class MaxShutter(BinarySensorEntity):
         self._is_open = None
 
         self._connection.add_paired_device(self.sender_id)
+
+        new_data = copy.deepcopy(dict(config_entry.data))
+        new_data[CONF_DEVICES][device_id] = {
+            CONF_NAME: name,
+            CONF_TYPE: SHUTTER_CONTACT
+        }
+
+        hass.config_entries.async_update_entry(config_entry, data=new_data)
 
     @property
     def device_info(self) -> DeviceInfo:

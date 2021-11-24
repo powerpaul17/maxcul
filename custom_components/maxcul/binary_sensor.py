@@ -56,7 +56,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
     for device_id, device in config_entry.data.get(CONF_DEVICES).items():
         devices.append(MaxBattery(connection, device_id, device[CONF_NAME]))
         if device[CONF_TYPE] == SHUTTER_CONTACT:
-            devices.append(MaxShutter(connection, device_id, device[CONF_NAME]))
+            devices.append(
+                MaxShutter(hass, config_entry, connection, device_id, device[CONF_NAME])
+            )
 
     async_add_devices(devices)
 
@@ -78,18 +80,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
 
         device_type = payload.get(ATTR_DEVICE_TYPE)
         if device_type is SHUTTER_CONTACT:
-            devices_to_add.append(MaxShutter(connection, device_id, device_name))
-
-            new_data = {**config_entry.data}
-
-            new_devices = devices.copy()
-            new_devices[device_id] = {
-                CONF_NAME: device_name,
-                CONF_TYPE: SHUTTER_CONTACT
-            }
-            new_data[CONF_DEVICES] = new_devices
-
-            hass.config_entries.async_update_entry(config_entry, data=new_data)
+            devices_to_add.append(
+                MaxShutter(hass, config_entry, connection, device_id, device_name)
+            )
 
         async_add_devices(devices_to_add)
 
