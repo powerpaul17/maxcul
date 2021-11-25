@@ -44,7 +44,7 @@ async def test_update(hass: HomeAssistant):
         CONF_DEVICE_PATH: '/dev/tty0',
         CONF_DEVICES: {
             '12345': {
-                CONF_NAME: 'DEF',
+                CONF_NAME: 'Thermostat1',
                 CONF_TYPE: HEATING_THERMOSTAT
             }
         }
@@ -54,7 +54,7 @@ async def test_update(hass: HomeAssistant):
     assert await async_setup_entry(hass, config_entry)
     await hass.async_block_till_done()
 
-    assert hass.states.get('climate.def').state == 'unknown'
+    assert hass.states.get('climate.thermostat1').state == 'unknown'
 
     async_dispatcher_send(
         hass,
@@ -71,7 +71,7 @@ async def test_update(hass: HomeAssistant):
 
     await hass.async_block_till_done()
 
-    state = hass.states.get('climate.def')
+    state = hass.states.get('climate.thermostat1')
     assert state.state == HVAC_MODE_HEAT
     assert state.attributes.get('temperature') == 21.5
     assert state.attributes.get('current_temperature') == 23.0

@@ -32,7 +32,7 @@ async def test_setup_entry(hass):
         CONF_DEVICE_PATH: '/dev/tty0',
         CONF_DEVICES: {
             '12345': {
-                CONF_NAME: 'DEF',
+                CONF_NAME: 'Thermostat1',
                 CONF_TYPE: HEATING_THERMOSTAT
             }
         }
@@ -42,7 +42,7 @@ async def test_setup_entry(hass):
 
     await hass.async_block_till_done()
 
-    assert hass.data.get('entity_registry').entities.get('climate.def')
+    assert hass.data.get('entity_registry').entities.get('climate.thermostat1')
 
 
 async def test_pairing(hass: HomeAssistant, max_connection_factory: MockConnectionFactory):
@@ -67,7 +67,7 @@ async def test_pairing(hass: HomeAssistant, max_connection_factory: MockConnecti
         {
             ATTR_DEVICE_ID: 12345,
             ATTR_DEVICE_TYPE: HEATING_THERMOSTAT,
-            ATTR_DEVICE_SERIAL: 'DEF',
+            ATTR_DEVICE_SERIAL: 'Thermostat1',
             ATTR_FIRMWARE_VERSION: 1.0
         }
     )
@@ -75,10 +75,10 @@ async def test_pairing(hass: HomeAssistant, max_connection_factory: MockConnecti
     await hass.async_block_till_done()
     await hass.async_block_till_done()
 
-    assert hass.data.get('entity_registry').entities.get('climate.def')
+    assert hass.data.get('entity_registry').entities.get('climate.thermostat1')
 
     device = config_entry.data.get(CONF_DEVICES).get('12345')
     assert device == {
-        CONF_NAME: 'DEF',
+        CONF_NAME: 'Thermostat1',
         CONF_TYPE: HEATING_THERMOSTAT
     }

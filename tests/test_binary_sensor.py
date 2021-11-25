@@ -38,7 +38,7 @@ async def test_update(hass: HomeAssistant):
         CONF_DEVICE_PATH: '/dev/tty0',
         CONF_DEVICES: {
             '12345': {
-                CONF_NAME: 'DEF',
+                CONF_NAME: 'ShutterContact1',
                 CONF_TYPE: SHUTTER_CONTACT
             }
         }
@@ -48,7 +48,7 @@ async def test_update(hass: HomeAssistant):
     assert await async_setup_entry(hass, config_entry)
     await hass.async_block_till_done()
 
-    assert hass.states.get('binary_sensor.def').state == 'off'
+    assert hass.states.get('binary_sensor.shuttercontact1').state == 'off'
 
     async_dispatcher_send(
         hass,
@@ -62,4 +62,4 @@ async def test_update(hass: HomeAssistant):
 
     await hass.async_block_till_done()
 
-    assert hass.states.get('binary_sensor.def').state == 'on'
+    assert hass.states.get('binary_sensor.shuttercontact1').state == 'on'
