@@ -12,7 +12,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_DEVICES,
     CONF_NAME,
-    CONF_TYPE
+    CONF_TYPE,
+    ENTITY_CATEGORY_DIAGNOSTIC
 )
 
 from homeassistant.core import (
@@ -145,6 +146,10 @@ class MaxBattery(BinarySensorEntity):
     @property
     def device_class(self) -> str:
         return DEVICE_CLASS_BATTERY
+
+    @property
+    def entity_category(self) -> str | None:
+        return ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def is_on(self) -> bool:
