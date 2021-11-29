@@ -148,7 +148,7 @@ class MaxBattery(BinarySensorEntity):
         return DEVICE_CLASS_BATTERY
 
     @property
-    def entity_category(self) -> str | None:
+    def entity_category(self) -> str:
         return ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
