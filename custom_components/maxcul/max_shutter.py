@@ -4,6 +4,7 @@ Binary sensor entity module for Max window shutter sensors
 
 from typing import Any, Mapping
 import copy
+import logging
 
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
@@ -38,6 +39,8 @@ from custom_components.maxcul import (
     SIGNAL_SHUTTER_UPDATE,
     MaxCulConnection
 )
+
+LOGGER = logging.getLogger(__name__)
 
 
 class MaxShutter(BinarySensorEntity):
@@ -87,6 +90,13 @@ class MaxShutter(BinarySensorEntity):
                 return
 
             self._is_open = payload.get(ATTR_STATE, None)
+
+            LOGGER.debug(
+                'Received update of %s (%s): %s',
+                self.name,
+                self.unique_id,
+                self._is_open
+            )
 
             self.async_schedule_update_ha_state()
 

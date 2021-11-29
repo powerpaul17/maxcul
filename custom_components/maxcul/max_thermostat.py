@@ -4,6 +4,7 @@ Climate entity module for Max Thermostats
 
 from typing import Any, Mapping
 import copy
+import logging
 
 from homeassistant.components.climate import (
     ClimateEntity,
@@ -70,6 +71,8 @@ from custom_components.maxcul.const import (
     DEFAULT_TEMPERATURE
 )
 
+LOGGER = logging.getLogger(__name__)
+
 
 class MaxThermostat(ClimateEntity):
     ''' Climate entity class for Max Thermostats '''
@@ -126,6 +129,16 @@ class MaxThermostat(ClimateEntity):
             target_temperature = payload.get(ATTR_DESIRED_TEMPERATURE)
             valve_position = payload.get(ATTR_VALVE_POSITION)
             mode = payload.get(ATTR_MODE)
+
+            LOGGER.debug(
+                'Received update of %s (%s): current_temperature: %.1f, target_temperature: %.1f, valve_position: %d, mode: %s',
+                self.name,
+                self.unique_id,
+                current_temperature,
+                target_temperature,
+                valve_position,
+                mode
+            )
 
             if current_temperature is not None:
                 self._current_temperature = current_temperature
@@ -240,8 +253,16 @@ class MaxThermostat(ClimateEntity):
 
     def set_hvac_mode(self, hvac_mode: str) -> None:
         new_temperature = self._target_temperature or DEFAULT_TEMPERATURE
-
         new_hvac_mode = self._hvac_mode_to_mode(hvac_mode)
+
+        LOGGER.debug(
+            'Setting HVAC mode of %s (%s) to %s (%.1f)',
+            self.name,
+            self.unique_id,
+            new_hvac_mode,
+            new_temperature
+        )
+
         if hvac_mode == HVAC_MODE_OFF:
             new_temperature = OFF_TEMPERATURE
 
@@ -253,6 +274,14 @@ class MaxThermostat(ClimateEntity):
 
     def set_temperature(self, **kwargs) -> None:
         target_temperature = kwargs.get(ATTR_TEMPERATURE)
+
+        LOGGER.debug(
+            'Setting temperature of %s (%s) to %.1f',
+            self.name,
+            self.unique_id,
+            target_temperature
+        )
+
         if target_temperature is None:
             raise ValueError(
                 f"No {ATTR_TEMPERATURE} parameter passed to set_temperature method."
@@ -265,6 +294,13 @@ class MaxThermostat(ClimateEntity):
         )
 
     def set_preset_mode(self, preset_mode: str) -> None:
+        LOGGER.debug(
+            'Setting preset mode of %s (%s) to %s',
+            self.name,
+            self.unique_id,
+            preset_mode
+        )
+
         if preset_mode == PRESET_NONE:
             self._connection.set_temperature(
                 self.sender_id,
