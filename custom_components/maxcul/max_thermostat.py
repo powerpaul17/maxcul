@@ -131,9 +131,9 @@ class MaxThermostat(ClimateEntity):
             mode = payload.get(ATTR_MODE)
 
             LOGGER.debug(
-                'Received update of %s (%s): current_temperature: %.1f, target_temperature: %.1f, valve_position: %d, mode: %s',
+                'Received update of %s (%x): current_temperature: %.1f, target_temperature: %.1f, valve_position: %d, mode: %s',
                 self.name,
-                self.unique_id,
+                self.sender_id,
                 current_temperature,
                 target_temperature,
                 valve_position,
@@ -256,9 +256,9 @@ class MaxThermostat(ClimateEntity):
         new_hvac_mode = self._hvac_mode_to_mode(hvac_mode)
 
         LOGGER.debug(
-            'Setting HVAC mode of %s (%s) to %s (%.1f)',
+            'Setting HVAC mode of %s (%x) to %s (%.1f)',
             self.name,
-            self.unique_id,
+            self.sender_id,
             new_hvac_mode,
             new_temperature
         )
@@ -276,9 +276,9 @@ class MaxThermostat(ClimateEntity):
         target_temperature = kwargs.get(ATTR_TEMPERATURE)
 
         LOGGER.debug(
-            'Setting temperature of %s (%s) to %.1f',
+            'Setting temperature of %s (%x) to %.1f',
             self.name,
-            self.unique_id,
+            self.sender_id,
             target_temperature
         )
 
@@ -295,9 +295,9 @@ class MaxThermostat(ClimateEntity):
 
     def set_preset_mode(self, preset_mode: str) -> None:
         LOGGER.debug(
-            'Setting preset mode of %s (%s) to %s',
+            'Setting preset mode of %s (%x) to %s',
             self.name,
-            self.unique_id,
+            self.sender_id,
             preset_mode
         )
 

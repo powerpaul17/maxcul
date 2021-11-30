@@ -92,9 +92,9 @@ class MaxShutter(BinarySensorEntity):
             self._is_open = payload.get(ATTR_STATE, None)
 
             LOGGER.debug(
-                'Received update of %s (%s): %s',
+                'Received update of %s (%x): %s',
                 self.name,
-                self.unique_id,
+                self.sender_id,
                 self._is_open
             )
 
