@@ -274,12 +274,14 @@ class MaxThermostat(ClimateEntity):
 
     def set_temperature(self, **kwargs) -> None:
         target_temperature = kwargs.get(ATTR_TEMPERATURE)
+        hvac_mode = self._mode or MODE_MANUAL
 
         LOGGER.debug(
-            'Setting temperature of %s (%x) to %.1f',
+            'Setting temperature of %s (%x) to %.1f with mode %s',
             self.name,
             self.sender_id,
-            target_temperature
+            target_temperature,
+            hvac_mode
         )
 
         if target_temperature is None:
@@ -290,7 +292,7 @@ class MaxThermostat(ClimateEntity):
         self._connection.set_temperature(
             self.sender_id,
             target_temperature,
-            self._mode or MODE_MANUAL
+            hvac_mode
         )
 
     def set_preset_mode(self, preset_mode: str) -> None:
