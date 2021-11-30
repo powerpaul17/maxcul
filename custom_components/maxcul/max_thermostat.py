@@ -13,6 +13,7 @@ from homeassistant.components.climate import (
 )
 
 from homeassistant.components.climate.const import (
+    ATTR_HVAC_MODE,
     CURRENT_HVAC_HEAT,
     CURRENT_HVAC_IDLE,
     CURRENT_HVAC_OFF,
@@ -275,6 +276,10 @@ class MaxThermostat(ClimateEntity):
     def set_temperature(self, **kwargs) -> None:
         target_temperature = kwargs.get(ATTR_TEMPERATURE)
         hvac_mode = self._mode or MODE_MANUAL
+
+        hvac_mode_from_args = kwargs.get(ATTR_HVAC_MODE)
+        if hvac_mode_from_args and hvac_mode_from_args != hvac_mode:
+            hvac_mode = hvac_mode_from_args
 
         LOGGER.debug(
             'Setting temperature of %s (%x) to %.1f with mode %s',
