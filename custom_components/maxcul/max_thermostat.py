@@ -97,8 +97,12 @@ class MaxThermostat(ClimateEntity):
         self._target_temperature: float or None = None
         self._valve_position: int or None = None
 
+        self._desired_target_temperature: float or None = None
+
         # auto manual temporary boost
         self._mode = None
+
+        self._desired_mode = None
 
         self._connection.add_paired_device(self.sender_id)
 
@@ -152,6 +156,9 @@ class MaxThermostat(ClimateEntity):
 
             if mode is not None:
                 self._mode = mode
+
+            self._desired_target_temperature = None
+            self._desired_mode = None
 
             self.async_schedule_update_ha_state()
 
@@ -253,7 +260,7 @@ class MaxThermostat(ClimateEntity):
         }
 
     def set_hvac_mode(self, hvac_mode: str) -> None:
-        new_temperature = self._target_temperature or DEFAULT_TEMPERATURE
+        new_temperature = self._desired_target_temperature or self._target_temperature or DEFAULT_TEMPERATURE
         new_hvac_mode = self._hvac_mode_to_mode(hvac_mode)
 
         LOGGER.debug(
@@ -265,7 +272,9 @@ class MaxThermostat(ClimateEntity):
         )
 
         if hvac_mode == HVAC_MODE_OFF:
-            new_temperature = OFF_TEMPERATURE
+            new_temperature = self._desired_target_temperature = OFF_TEMPERATURE
+
+        self._desired_mode = new_hvac_mode
 
         self._connection.set_temperature(
             self.sender_id,
@@ -275,11 +284,11 @@ class MaxThermostat(ClimateEntity):
 
     def set_temperature(self, **kwargs) -> None:
         target_temperature = kwargs.get(ATTR_TEMPERATURE)
-        hvac_mode = self._mode or MODE_MANUAL
+        hvac_mode = self._desired_mode or self._mode or MODE_MANUAL
 
         hvac_mode_from_args = kwargs.get(ATTR_HVAC_MODE)
         if hvac_mode_from_args and hvac_mode_from_args != hvac_mode:
-            hvac_mode = hvac_mode_from_args
+            hvac_mode = self._desired_mode = hvac_mode_from_args
 
         LOGGER.debug(
             'Setting temperature of %s (%x) to %.1f with mode %s',
@@ -293,6 +302,8 @@ class MaxThermostat(ClimateEntity):
             raise ValueError(
                 f"No {ATTR_TEMPERATURE} parameter passed to set_temperature method."
             )
+
+        self._desired_target_temperature = target_temperature
 
         self._connection.set_temperature(
             self.sender_id,
@@ -308,29 +319,27 @@ class MaxThermostat(ClimateEntity):
             preset_mode
         )
 
+        target_temperature = self._desired_target_temperature or self._target_temperature or DEFAULT_TEMPERATURE
+
         if preset_mode == PRESET_NONE:
-            self._connection.set_temperature(
-                self.sender_id,
-                self._target_temperature,
-                MODE_MANUAL
-            )
+            mode = MODE_MANUAL
 
         elif preset_mode == PRESET_AWAY:
-            self._connection.set_temperature(
-                self.sender_id,
-                self._target_temperature,
-                MODE_TEMPORARY
-            )
+            mode = MODE_TEMPORARY
 
         elif preset_mode == PRESET_BOOST:
-            self._connection.set_temperature(
-                self.sender_id,
-                self._target_temperature,
-                MODE_BOOST
-            )
+            mode = MODE_BOOST
 
         else:
             raise ValueError(f"Unsupported preset mode {preset_mode}")
+
+        self._desired_mode = mode
+
+        self._connection.set_temperature(
+            self.sender_id,
+            target_temperature,
+            mode
+        )
 
     @staticmethod
     def _hvac_mode_to_mode(hvac_mode):
