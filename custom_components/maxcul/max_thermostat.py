@@ -286,7 +286,7 @@ class MaxThermostat(ClimateEntity):
         target_temperature = kwargs.get(ATTR_TEMPERATURE)
         hvac_mode = self._desired_mode or self._mode or MODE_MANUAL
 
-        hvac_mode_from_args = kwargs.get(ATTR_HVAC_MODE)
+        hvac_mode_from_args = self._hvac_mode_to_mode(kwargs.get(ATTR_HVAC_MODE))
         if hvac_mode_from_args and hvac_mode_from_args != hvac_mode:
             hvac_mode = self._desired_mode = hvac_mode_from_args
 
