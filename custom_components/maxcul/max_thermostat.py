@@ -203,7 +203,16 @@ class MaxThermostat(ClimateEntity):
 
     @property
     def target_temperature(self) -> float or None:
-        return self._target_temperature
+        target_temperature = self._target_temperature
+
+        if (
+            target_temperature is None or
+            target_temperature < self.min_temp or
+            target_temperature > self.max_temp
+        ):
+            return None
+
+        return target_temperature
 
     @property
     def target_temperature_step(self) -> float:
