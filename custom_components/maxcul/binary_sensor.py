@@ -3,8 +3,8 @@ Binary sensor platform module of MaxCUL integration
 '''
 
 from homeassistant.components.binary_sensor import (
-    BinarySensorEntity,
-    DEVICE_CLASS_BATTERY
+    BinarySensorDeviceClass,
+    BinarySensorEntity
 )
 
 from homeassistant.config_entries import ConfigEntry
@@ -12,8 +12,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_DEVICES,
     CONF_NAME,
-    CONF_TYPE,
-    ENTITY_CATEGORY_DIAGNOSTIC
+    CONF_TYPE
 )
 
 from homeassistant.core import (
@@ -23,6 +22,7 @@ from homeassistant.core import (
 
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.entity import EntityCategory
 
 from maxcul._const import (
     ATTR_BATTERY_LOW,
@@ -145,11 +145,11 @@ class MaxBattery(BinarySensorEntity):
 
     @property
     def device_class(self) -> str:
-        return DEVICE_CLASS_BATTERY
+        return BinarySensorDeviceClass.BATTERY
 
     @property
     def entity_category(self) -> str:
-        return ENTITY_CATEGORY_DIAGNOSTIC
+        return EntityCategory.DIAGNOSTIC
 
     @property
     def is_on(self) -> bool:

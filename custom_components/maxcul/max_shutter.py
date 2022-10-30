@@ -7,8 +7,8 @@ import copy
 import logging
 
 from homeassistant.components.binary_sensor import (
-    BinarySensorEntity,
-    DEVICE_CLASS_WINDOW
+    BinarySensorDeviceClass,
+    BinarySensorEntity
 )
 
 from homeassistant.config_entries import ConfigEntry
@@ -121,7 +121,7 @@ class MaxShutter(BinarySensorEntity):
 
     @property
     def device_class(self) -> str:
-        return DEVICE_CLASS_WINDOW
+        return BinarySensorDeviceClass.WINDOW
 
     @property
     def is_on(self) -> bool:
