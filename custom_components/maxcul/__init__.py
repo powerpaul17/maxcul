@@ -70,7 +70,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
 
     hass.data[DOMAIN][CONF_CONNECTIONS][device_path] = connection
 
-    device_registry = await dr.async_get_registry(hass)
+    device_registry = await dr.async_get(hass)
     for device_entry in dr.async_entries_for_config_entry(device_registry, config_entry.entry_id):
         for (_, device_id) in device_entry.identifiers:
             if device_id not in config_entry.data.get(CONF_DEVICES).keys():
