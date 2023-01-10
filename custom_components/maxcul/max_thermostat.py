@@ -53,6 +53,8 @@ from maxcul._const import (
 from maxcul import (
     ATTR_DESIRED_TEMPERATURE,
     ATTR_MEASURED_TEMPERATURE,
+    ATTR_VALVE_POSITION,
+    ATTR_BATTERY_LOW,
     MODE_AUTO,
     MODE_BOOST,
     MODE_MANUAL,
@@ -96,6 +98,7 @@ class MaxThermostat(ClimateEntity):
         self._current_temperature: float or None = None
         self._target_temperature: float or None = None
         self._valve_position: int or None = None
+        self._battery_low: bool or None = None
 
         self._desired_target_temperature: float or None = None
 
@@ -133,10 +136,11 @@ class MaxThermostat(ClimateEntity):
             current_temperature = payload.get(ATTR_MEASURED_TEMPERATURE)
             target_temperature = payload.get(ATTR_DESIRED_TEMPERATURE)
             valve_position = payload.get(ATTR_VALVE_POSITION)
+            battery_low = payload.get(ATTR_BATTERY_LOW)
             mode = payload.get(ATTR_MODE)
 
             LOGGER.debug(
-                'Received update of %s (%x): current_temperature: %.1f, target_temperature: %.1f, valve_position: %d, mode: %s',
+                'Received update of %s (%x): current_temperature: %.1f, target_temperature: %.1f, valve_position: %d, mode: %s, battery_low: %d',
                 self.name,
                 self.sender_id,
                 current_temperature,
@@ -153,6 +157,9 @@ class MaxThermostat(ClimateEntity):
 
             if valve_position is not None:
                 self._valve_position = valve_position
+
+            if battery_low is not None:
+                self._battery_low = battery_low
 
             if mode is not None:
                 self._mode = mode
@@ -265,7 +272,8 @@ class MaxThermostat(ClimateEntity):
     @property
     def extra_state_attributes(self) -> Mapping[str, Any]:
         return {
-            ATTR_VALVE_POSITION: self._valve_position
+            ATTR_VALVE_POSITION: self._valve_position,
+            ATTR_BATTERY_LOW: self._battery_low
         }
 
     def set_hvac_mode(self, hvac_mode: str) -> None:
