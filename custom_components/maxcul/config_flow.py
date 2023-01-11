@@ -186,7 +186,7 @@ def get_cul_version(com_port: Serial or TelnetSerial) -> bool:
 
     # get CUL FW version
     for _ in range(10):
-        com_port.write(b'V')
+        com_port.write(b'V\n')
         time.sleep(1)
         cul_version = com_port.readline() or None
         if cul_version is not None:
