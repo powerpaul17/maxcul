@@ -1,7 +1,7 @@
 {
   "domain": "maxcul",
   "name": "Max CUL",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "documentation": "https://github.com/powerpaul17/maxcul",
   "issue_tracker": "https://github.com/powerpaul17/maxcul/issues",
   "codeowners": [ "@powerpaul17" ],
