@@ -7,7 +7,7 @@
   "codeowners": [ "@powerpaul17" ],
   "config_flow": true,
   "requirements": [
-    "pymaxcul @ git+https://github.com/powerpaul17/pymaxcul.git@03a812738e2a708db2980972e19408715cbaa6c5"
+    "git+https://github.com/powerpaul17/pymaxcul.git@master#pymaxcul==0.1.14"
   ],
   "iot_class": "local_push"
 }
