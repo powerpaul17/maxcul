@@ -2,6 +2,8 @@
 MaxCUL custom component for Home Assistant
 '''
 
+import logging
+
 import voluptuous
 
 from homeassistant.config_entries import ConfigEntry
@@ -27,6 +29,10 @@ from maxcul import (
     EVENT_SHUTTER_UPDATE,
     EVENT_THERMOSTAT_UPDATE
 )
+
+
+
+LOGGER = logging.getLogger(__name__)
 
 DOMAIN = 'maxcul'
 
@@ -80,7 +86,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         service_device_path = service.data[SERVICE_CONF_DEVICE_PATH]
         duration = service.data[SERVICE_CONF_DURATION]
 
-        if service_device_path != device_path:
+        if service_device_path.replace('telnet://','') != device_path.replace("telnet://",""):
             return
 
         connection.enable_pairing(duration)
@@ -92,13 +98,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         schema=ENABLE_PAIRING_SERVICE_SCHEMA
     )
 
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(config_entry, 'climate')
-    )
-
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(config_entry, 'binary_sensor')
-    )
+    await hass.config_entries.async_forward_entry_setups(config_entry, ['climate', 'binary_sensor'])
 
     return True
 
@@ -142,15 +142,17 @@ class MaxCulConnection:
 
     def enable_pairing(self, duration):
         ''' Enable pairing of devices '''
+        LOGGER.debug(f"Enabling pairing on {self._device_path} for {duration} s")
         self._connection.enable_pairing(duration)
 
     def add_paired_device(self, device_id):
         ''' Add a device id to the paired devices '''
+        LOGGER.debug(f"Adding device {device_id}")
         self._connection.add_paired_device(device_id)
 
     def set_temperature(self, device_id: int, target_temperature: float, mode):
         ''' Set the target temperature of a thermostat device '''
-
+        LOGGER.debug(f"Setting temperature on {device_id} to {target_temperature} (mode: {mode})")
         self._connection.set_temperature(
             device_id,
             target_temperature,

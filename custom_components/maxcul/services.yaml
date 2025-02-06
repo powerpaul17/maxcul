@@ -3,7 +3,9 @@ enable_pairing:
   fields:
     device_path:
       name: Device Path
-      description: The path of the CUL device for which pairing is enabled
+      description: The path of the CUL device for which pairing shall be enabled
+      default: &default "COM1 or /dev/ttyUSB0 or 192.168.0.1:2323"
+      example: *default 
       selector:
         text:
     duration:

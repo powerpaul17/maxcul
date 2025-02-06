@@ -2,7 +2,7 @@
 Config flow for MaxCUL custom component
 '''
 
-import time
+import asyncio
 
 from homeassistant.const import (
     CONF_HOST,
@@ -174,20 +174,20 @@ async def test_connection(device_path: str) -> bool:
     except:
         return False
 
-    return get_cul_version(com_port)
+    return await get_cul_version(com_port)
 
-def get_cul_version(com_port: Serial or TelnetSerial) -> bool:
+async def get_cul_version(com_port: Serial or TelnetSerial) -> bool:
     ''' Determine CUL version of serial/telnet device '''
 
     cul_version = None
 
     # was required for my nanoCUL
-    time.sleep(2)
+    await asyncio.sleep(2)
 
     # get CUL FW version
     for _ in range(10):
         com_port.write(b'V\n')
-        time.sleep(1)
+        await asyncio.sleep(1)
         cul_version = com_port.readline() or None
         if cul_version is not None:
             break
