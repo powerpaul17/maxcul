@@ -86,7 +86,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         service_device_path = service.data[SERVICE_CONF_DEVICE_PATH]
         duration = service.data[SERVICE_CONF_DURATION]
 
-        if service_device_path.replace('telnet://','') != device_path.replace("telnet://",""):
+        if service_device_path.replace('telnet://','') != device_path.replace('telnet://',''):
             return
 
         connection.enable_pairing(duration)
