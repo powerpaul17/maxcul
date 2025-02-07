@@ -7,19 +7,14 @@ import copy
 import logging
 
 from homeassistant.components.climate import (
-    ClimateEntity,
-    SUPPORT_TARGET_TEMPERATURE,
-    SUPPORT_PRESET_MODE
+    ClimateEntity
 )
 
 from homeassistant.components.climate.const import (
+    ClimateEntityFeature,
+    HVACAction,
+    HVACMode,
     ATTR_HVAC_MODE,
-    CURRENT_HVAC_HEAT,
-    CURRENT_HVAC_IDLE,
-    CURRENT_HVAC_OFF,
-    HVAC_MODE_AUTO,
-    HVAC_MODE_HEAT,
-    HVAC_MODE_OFF,
     PRESET_AWAY,
     PRESET_BOOST,
     PRESET_NONE,
@@ -30,12 +25,12 @@ from homeassistant.components.maxcube.climate import (
 )
 
 from homeassistant.const import (
+    UnitOfTemperature,
     ATTR_MODE,
     ATTR_TEMPERATURE,
     CONF_DEVICES,
     CONF_NAME,
     CONF_TYPE,
-    TEMP_CELSIUS
 )
 
 from homeassistant.core import HomeAssistant, callback
@@ -183,7 +178,7 @@ class MaxThermostat(ClimateEntity):
 
     @property
     def supported_features(self) -> int:
-        return SUPPORT_PRESET_MODE | SUPPORT_TARGET_TEMPERATURE
+        return ClimateEntityFeature.PRESET_MODE | ClimateEntityFeature.TARGET_TEMPERATURE
 
     @property
     def min_temp(self) -> float:
@@ -195,7 +190,7 @@ class MaxThermostat(ClimateEntity):
 
     @property
     def temperature_unit(self) -> str:
-        return TEMP_CELSIUS
+        return UnitOfTemperature.CELSIUS
 
     @property
     def current_temperature(self) -> float or None:
@@ -241,25 +236,25 @@ class MaxThermostat(ClimateEntity):
     @property
     def hvac_action(self) -> str:
         if self._valve_position is not None and self._valve_position > 0:
-            return CURRENT_HVAC_HEAT
+            return HVACAction.HEATING
 
         return (
-            CURRENT_HVAC_OFF if self.hvac_mode == HVAC_MODE_OFF else CURRENT_HVAC_IDLE
+            HVACAction.OFF if self.hvac_mode == HVACMode.OFF else HVACAction.IDLE
         )
 
     @property
     def hvac_mode(self) -> str:
         if self._mode == MODE_MANUAL and self._target_temperature == OFF_TEMPERATURE:
-            return HVAC_MODE_OFF
+            return HVACMode.OFF
         else:
             return self._mode_to_hvac_mode(self._mode)
 
     @property
     def hvac_modes(self) -> list[str]:
         return [
-            HVAC_MODE_OFF,
-            HVAC_MODE_AUTO,
-            HVAC_MODE_HEAT
+            HVACMode.OFF,
+            HVACMode.AUTO,
+            HVACMode.HEAT
         ]
 
     @property
@@ -280,9 +275,14 @@ class MaxThermostat(ClimateEntity):
             new_temperature
         )
 
-        if hvac_mode == HVAC_MODE_OFF:
+        if hvac_mode == HVACMode.OFF:
+            # Set desired temperature to absolute minimum
             new_temperature = self._desired_target_temperature = OFF_TEMPERATURE
-
+        
+        if hvac_mode == HVACMode.HEAT:
+            # If we were previously in OFF mode and now switched to manual, the UI still thinks, we are off, if we dont revert to some temperature, that is **not** the OFF_TEMPERATURE
+            if new_temperature == OFF_TEMPERATURE: new_temperature = DEFAULT_TEMPERATURE 
+        
         self._desired_mode = new_hvac_mode
 
         self._connection.set_temperature(
@@ -353,16 +353,16 @@ class MaxThermostat(ClimateEntity):
     @staticmethod
     def _hvac_mode_to_mode(hvac_mode):
         return {
-            HVAC_MODE_OFF: MODE_MANUAL,
-            HVAC_MODE_AUTO: MODE_AUTO,
-            HVAC_MODE_HEAT: MODE_MANUAL
+            HVACMode.OFF: MODE_MANUAL,
+            HVACMode.AUTO: MODE_AUTO,
+            HVACMode.HEAT: MODE_MANUAL
         }.get(hvac_mode)
 
     @staticmethod
     def _mode_to_hvac_mode(mode):
         return {
-            MODE_AUTO: HVAC_MODE_AUTO,
-            MODE_MANUAL: HVAC_MODE_HEAT,
-            MODE_BOOST: HVAC_MODE_AUTO, # ?
-            MODE_TEMPORARY: HVAC_MODE_HEAT # ? vacation, away mode
+            MODE_AUTO: HVACMode.AUTO,
+            MODE_MANUAL: HVACMode.HEAT,
+            MODE_BOOST: HVACMode.AUTO, # ?
+            MODE_TEMPORARY: HVACMode.HEAT # ? vacation, away mode
         }.get(mode)
