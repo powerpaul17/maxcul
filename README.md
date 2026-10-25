@@ -8,6 +8,12 @@ telnet connection.
 > actively maintained. Hardware, firmware, and Home Assistant versions may
 > affect compatibility. It is intentionally not distributed through HACS.
 > Contributions and bug reports are welcome.
+> Thanks to Paul!
+>
+> I used to run FHEM with a MAX! CUL in Docker on a QNAP NAS, but it was time
+> to move to Home Assistant. I chose the sleek MAX! thermostats because they
+> communicate directly with the window contacts, so the heating control keeps
+> working even while Home Assistant is restarting or temporarily unavailable, and the week profile is stored in the thermostats, again no need for live connectivity.
 
 ## Install
 
@@ -38,7 +44,6 @@ devices.
 | MAX! heating thermostat | Climate entity with target temperature, mode, preset, and reported valve position |
 | MAX! wall thermostat | Climate entity |
 | MAX! shutter contact | Window binary sensor |
-| Paired MAX! device | Diagnostic battery binary sensor |
 | Week schedule | `maxcul.set_week_profile` service and MAX! week-profile dashboard card |
 | Window-to-thermostat link | `maxcul.associate` and `maxcul.deassociate` services |
 
@@ -405,3 +410,6 @@ measurement of actual radiator water flow.
   sent messages. Check that the CUL has enough send budget and the thermostat
   is reachable. The stored thermostat schedule cannot be read back for
   comparison.
+
+## Outlook
+Change German language to English ;-)
