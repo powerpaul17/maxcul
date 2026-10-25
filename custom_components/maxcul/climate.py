@@ -21,8 +21,13 @@ from maxcul._const import (
     ATTR_DEVICE_ID,
     ATTR_DEVICE_TYPE,
     ATTR_DEVICE_SERIAL,
-    HEATING_THERMOSTAT
+    HEATING_THERMOSTAT,
+    HEATING_THERMOSTAT_PLUS,
+    WALL_MOUNTED_THERMOSTAT
 )
+
+# These types of thermostats shall all be handled the same way
+supported_thermostats = [HEATING_THERMOSTAT, HEATING_THERMOSTAT_PLUS, WALL_MOUNTED_THERMOSTAT]
 
 from custom_components.maxcul import (
     ATTR_CONNECTION_DEVICE_PATH,
@@ -34,7 +39,6 @@ from custom_components.maxcul import (
 )
 
 from custom_components.maxcul.max_thermostat import MaxThermostat
-
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_devices):
     ''' Set up the climate platform for the MaxCUL integration from a config entry. '''
@@ -51,7 +55,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
             device[CONF_NAME]
         )
         for device_id, device in config_entry.data.get(CONF_DEVICES).items()
-        if device[CONF_TYPE] == HEATING_THERMOSTAT
+        if device[CONF_TYPE] in supported_thermostats
     ]
     async_add_devices(devices)
 
@@ -62,7 +66,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
             return
 
         device_type = payload.get(ATTR_DEVICE_TYPE)
-        if device_type is not HEATING_THERMOSTAT:
+        if device_type not in supported_thermostats:
             return
 
         device_id = str(payload.get(ATTR_DEVICE_ID))
