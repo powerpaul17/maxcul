@@ -1,19 +1,123 @@
 enable_pairing:
-  description: Enable pairing of MAX! devices for a given duration
+  name: Enable device pairing
+  description: Open the pairing window on a MaxCUL connection so nearby MAX! devices can be paired.
   fields:
     device_path:
-      name: Device Path
-      description: The path of the CUL device for which pairing shall be enabled
-      default: &default "COM1 or /dev/ttyUSB0 or 192.168.0.1:2323"
-      example: *default 
+      name: CUL connection
+      description: Optional. Required only when multiple CUL connections are loaded.
+      example: "telnet://192.168.1.10:2323"
       selector:
         text:
     duration:
-      name: Duration
-      description: Duration for which pairing is possible in seconds
-      default: 60
+      name: Pairing duration
+      description: Number of seconds to allow pairing (1 to 300 seconds).
+      default: 30
       selector:
         number:
-          min: 0
+          min: 1
           max: 300
+          step: 1
           unit_of_measurement: seconds
+
+set_week_profile:
+  name: Set thermostat week profile
+  description: Write a complete weekly heating schedule directly to a MAX! thermostat.
+  fields:
+    device_id:
+      name: Thermostat
+      description: Select a MaxCUL thermostat. Automations may also use its friendly name or hexadecimal address.
+      selector:
+        entity:
+          filter:
+            domain: climate
+            device:
+              integration: maxcul
+    device_path:
+      name: CUL connection
+      description: Optional connection path to disambiguate identical device IDs.
+      example: "/dev/ttyUSB0"
+      selector:
+        text:
+    week_profile:
+      name: Weekly schedule
+      description: >-
+        One line for each day, using a day name and alternating temperatures
+        and switch times. Temperatures are 4.5–30.5 °C in 0.5 °C steps;
+        times are in 5-minute increments.
+      example: |-
+        Mon 21,06:00,17,22:00,16
+        Tue 21,06:00,17,22:00,16
+        Wed 21,06:00,17,22:00,16
+        Thu 21,06:00,17,22:00,16
+        Fri 21,06:00,17,22:00,16
+        Sat 21,08:00,17,23:00,16
+        Sun 21,08:00,17,23:00,16
+      selector:
+        text:
+          multiline: true
+
+associate:
+  name: Associate thermostat and window contact
+  description: >-
+    Create a bidirectional MAX! link between a heating thermostat and a window
+    contact. After calling this service, open or close the window to trigger
+    the contact's reed relay and wake it. Do not press the pairing button on
+    the back of the contact.
+  fields:
+    thermostat_id:
+      name: Thermostat
+      description: Select a MaxCUL thermostat. Automations may also use its friendly name or hexadecimal address.
+      selector:
+        entity:
+          filter:
+            domain: climate
+            device:
+              integration: maxcul
+    window_contact_id:
+      name: Window contact
+      description: Select a MaxCUL window contact. Automations may also use its friendly name or hexadecimal address.
+      selector:
+        entity:
+          filter:
+            domain: binary_sensor
+            device_class: window
+            device:
+              integration: maxcul
+    device_path:
+      name: CUL connection
+      description: Optional path to disambiguate devices paired to multiple CULs.
+      example: "/dev/ttyUSB0"
+      selector:
+        text:
+
+deassociate:
+  name: Remove thermostat and window contact association
+  description: >-
+    Remove the bidirectional MAX! link between a thermostat and window contact.
+    Open or close the window to trigger the contact's reed relay and wake it.
+  fields:
+    thermostat_id:
+      name: Thermostat
+      description: Select a MaxCUL thermostat. Automations may also use its friendly name or hexadecimal address.
+      selector:
+        entity:
+          filter:
+            domain: climate
+            device:
+              integration: maxcul
+    window_contact_id:
+      name: Window contact
+      description: Select a MaxCUL window contact. Automations may also use its friendly name or hexadecimal address.
+      selector:
+        entity:
+          filter:
+            domain: binary_sensor
+            device_class: window
+            device:
+              integration: maxcul
+    device_path:
+      name: CUL connection
+      description: Optional path to disambiguate devices paired to multiple CULs.
+      example: "/dev/ttyUSB0"
+      selector:
+        text:

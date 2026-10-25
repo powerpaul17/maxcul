@@ -76,3 +76,43 @@ async def test_update(hass: HomeAssistant):
     assert state.attributes.get('temperature') == 21.5
     assert state.attributes.get('current_temperature') == 23.0
 
+
+async def test_wall_thermostat_plus_update(hass: HomeAssistant):
+    '''Test the Max! Wall Thermostat Plus device type.'''
+    config = {
+        CONF_DEVICE_PATH: '/dev/tty0',
+        CONF_DEVICES: {
+            '67890': {
+                CONF_NAME: 'WallThermostatPlus',
+                CONF_TYPE: 'WALL_THERMOSTAT_PLUS'
+            }
+        }
+    }
+    config_entry = MockConfigEntry(domain=DOMAIN, data=config, entry_id='test-wall')
+
+    assert await async_setup_entry(hass, config_entry)
+    await hass.async_block_till_done()
+
+    assert hass.states.get('climate.wallthermostatplus').state == 'unknown'
+
+    async_dispatcher_send(
+        hass,
+        SIGNAL_THERMOSTAT_UPDATE,
+        {
+            ATTR_DEVICE_ID: 67890,
+            ATTR_MEASURED_TEMPERATURE: 20.5,
+            ATTR_DESIRED_TEMPERATURE: 19.0,
+            ATTR_VALVE_POSITION: 35,
+            ATTR_MODE: MODE_MANUAL,
+            ATTR_BATTERY_LOW: False
+        }
+    )
+
+    await hass.async_block_till_done()
+
+    state = hass.states.get('climate.wallthermostatplus')
+    assert state is not None
+    assert state.state == HVAC_MODE_HEAT
+    assert state.attributes.get('temperature') == 19.0
+    assert state.attributes.get('current_temperature') == 20.5
+

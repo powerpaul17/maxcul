@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect x="6" y="6" width="244" height="244" rx="48" fill="#fff" stroke="#e5e7eb" stroke-width="4"/>
+  <text x="15" y="146" fill="#08090b" font-family="DejaVu Sans Condensed, Arial Narrow, sans-serif" font-size="72" font-weight="900" letter-spacing="-4" textLength="164" lengthAdjust="spacingAndGlyphs">MAX</text>
+  <text x="181" y="88" fill="#ef6c24" font-family="DejaVu Sans Condensed, Arial Narrow, sans-serif" font-size="49" font-weight="700" letter-spacing="-2" textLength="64" lengthAdjust="spacingAndGlyphs">!!#</text>
+  <g fill="none" stroke="#ef6c24" stroke-linecap="round" stroke-width="8">
+    <path d="M82 220a46 46 0 0 1 92 0"/>
+    <path d="M101 220a27 27 0 0 1 54 0"/>
+  </g>
+  <circle cx="128" cy="220" r="5" fill="#ef6c24"/>
+</svg>
