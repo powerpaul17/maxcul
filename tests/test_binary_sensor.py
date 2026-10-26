@@ -48,7 +48,8 @@ async def test_update(hass: HomeAssistant):
     assert await async_setup_entry(hass, config_entry)
     await hass.async_block_till_done()
 
-    assert hass.states.get('binary_sensor.shuttercontact1').state == 'off'
+    assert hass.states.get('binary_sensor.shuttercontact1').state == 'unknown'
+    assert hass.states.get('binary_sensor.shuttercontact1_battery').state == 'unknown'
 
     async_dispatcher_send(
         hass,

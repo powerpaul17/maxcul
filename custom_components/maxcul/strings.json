@@ -1,0 +1,59 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect your MAX! CUL",
+        "description": "Choose how Home Assistant can reach your CUL device.",
+        "data": {
+          "device_type": "Connection type"
+        }
+      },
+      "device_picker": {
+        "title": "Choose a serial CUL",
+        "description": "Select the serial port your CUL is connected to. Choose “Enter manually” if your device is not listed.",
+        "data": {
+          "device_path": "Serial device"
+        }
+      },
+      "manual_device_path": {
+        "title": "Enter a device path",
+        "description": "Enter a serial path such as /dev/serial/by-id/your-device, or a telnet URL such as telnet://192.168.1.10:2323.",
+        "data": {
+          "device_path": "Serial path or telnet URL"
+        }
+      },
+      "pick_host": {
+        "title": "Connect over the network",
+        "description": "Enter the host name or IP address of your CUL's telnet server. The default port is 2323.",
+        "data": {
+          "host": "Host or IP address",
+          "port": "Telnet port"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect_to_device": "Could not communicate with a CUL at this address. Check the path, host, port, permissions, and that the device is powered on."
+    },
+    "abort": {
+      "already_configured": "This CUL connection is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "CUL radio settings",
+        "description": "Set the radio address used by this CUL. Leave the default unless you need a different address.",
+        "data": {
+          "sender_id": "CUL radio address (decimal; default 1193046)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "battery": {
+        "name": "Battery"
+      }
+    }
+  }
+}
